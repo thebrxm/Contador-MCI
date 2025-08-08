@@ -463,41 +463,47 @@
 </script>
 
 <script>
-function buildResumen() {
-  const d = k => parseInt(localStorage.getItem(k) || '0', 10) || 0;
-  const total = d('proc_atendidos') + d('proc_trasladados');
-  const incidente = (localStorage.getItem('titulo_text') || '').trim();
-  const direccion = (localStorage.getItem('direccion_text') || '').trim();
-  const notas = (localStorage.getItem('notas_text') || '').trim();
+ function buildResumen() {
+    const d = k => parseInt(localStorage.getItem(k) || '0', 10) || 0;
+    const total = d('proc_atendidos') + d('proc_trasladados');
+    const incidente = (localStorage.getItem('titulo_text') || '').trim();
+    const direccion = (localStorage.getItem('direccion_text') || '').trim();
+    const notas = (localStorage.getItem('notas_text') || '').trim();
 
-  return [
-    `Incidente: ${incidente}`,
-    `Dirección: ${direccion}`,
-    ``,
-    `Hasta ahora ${total} pacientes`,
-    ``,
-    `Sexo:`,
-    `* ${d('sexo_f')} Femeninos.`,
-    `* ${d('sexo_m')} Masculinos.`,
-    `* ${d('sexo_sd')} S/D`,
-    ``,
-    `Edad:`,
-    `* ${d('edad_menores')} Menores`,
-    `* ${d('edad_mayores')} Mayores`,
-    `* ${d('edad_sd')} S/D`,
-    ``,
-    `Procedimiento`,
-    `* ${d('proc_atendidos')} Atendidos en el lugar:`,
-    `* ${d('proc_trasladados')} trasladados`,
-    ``,
-    `Dotación:`,
-    `* ${d('dot_moviles')} Móviles`,
-    `* ${d('dot_aereo')} Aéreo`,
-    ``,
-    `Notas:`,
-    notas
-  ].join('\n');
-}
+    return [
+      `Incidente: ${incidente}`,
+      `Dirección: ${direccion}`,
+      ``,
+      `Hasta ahora ${total} pacientes`,
+      ``,
+      `Sexo:`,
+      `* ${d('sexo_f')} Femeninos.`,
+      `* ${d('sexo_m')} Masculinos.`,
+      `* ${d('sexo_sd')} S/D`,
+      ``,
+      `Edad:`,
+      `* ${d('edad_menores')} Menores`,
+      `* ${d('edad_mayores')} Mayores`,
+      `* ${d('edad_sd')} S/D`,
+      ``,
+      `Procedimiento`,
+      `* ${d('proc_atendidos')} Atendidos en el lugar:`,
+      `* ${d('proc_trasladados')} trasladados`,
+      ``,
+      `Dotación:`,
+      `* ${d('dot_moviles')} Móviles`,
+      `* ${d('dot_aereo')} Aéreo`,
+      ``,
+      `Notas:`,
+      notas
+    ].join('\n');
+  }
+
+  document.getElementById('btnWhatsapp').addEventListener('click', () => {
+    const texto = buildResumen();
+    const url = 'https://wa.me/?text=' + encodeURIComponent(texto);
+    window.open(url, '_blank') || (location.href = url);
+  });
 </script>
 
 </body>
