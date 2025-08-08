@@ -469,7 +469,6 @@
     const incidente = (localStorage.getItem('titulo_text') || '').trim();
     const direccion = (localStorage.getItem('direccion_text') || '').trim();
     const notas = (localStorage.getItem('notas_text') || '').trim();
-
     return [
       `Incidente: ${incidente}`,
       `Dirección: ${direccion}`,
@@ -499,11 +498,45 @@
     ].join('\n');
   }
 
-  document.getElementById('btnWhatsapp').addEventListener('click', () => {
-    const texto = buildResumen();
-    const url = 'https://wa.me/?text=' + encodeURIComponent(texto);
-    window.open(url, '_blank') || (location.href = url);
-  });
+  function abrirWhatsApp(texto) {
+  const t = encodeURIComponent(texto);
+
+  // 1) iOS/Android modernos: usar o Share Sheet (inclui WhatsApp)
+  if (navigator.share) {
+    navigator.share({ text: texto }).catch(() => {
+      // se o usuário cancelar, não faz nada
+    });
+    return;
+  }
+
+  // 2) Fallback: links oficiais do WhatsApp (dois domínios)
+  const url1 = 'https://wa.me/?text=' + t;
+  const url2 = 'https://api.whatsapp.com/send?text=' + t;
+
+  // iOS PWA precisa abrir na MESMA aba (_self), não em pop-up:
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+  const a = document.createElement('a');
+  a.href = url1;
+  a.rel = 'noopener';
+  a.target = isStandalone ? '_self' : '_blank';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  // fallback extra (algumas versões do iOS preferem api.whatsapp.com)
+  setTimeout(() => {
+    if (document.visibilityState === 'visible') {
+      // ainda na página => tenta a outra URL
+      location.href = url2;
+    }
+  }, 800);
+}
+
+document.getElementById('btnWhatsapp').addEventListener('click', () => {
+  const texto = buildResumen(); // ou sua função atual
+  abrirWhatsApp(texto);
+});
 </script>
 
 </body>
