@@ -39,60 +39,35 @@
   .flash-red { animation: flashRed 0.4s ease; }
   @keyframes flashRed { 0% { background:#ff0000; } 100% { background:transparent; } }
   .sd-disabled .btn { opacity:.5; pointer-events: none; }
-
-html { -webkit-text-size-adjust: 100%; } /* iOS: evita esticar texto ao dar zoom */
-/* Header base */
-header { position: sticky; top: 0; z-index: 1000; background: #0b1a2a; padding: 0 12px 12px; }
-/* Faixa verde estável (sem usar vh) */
-.header-hero {
-  background: #065f46;
-  border-radius: 12px;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 88px;        /* px, não vh */
-  overflow: hidden;
-}
-.header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.header-logo { width: 56px; height: auto; flex: 0 0 auto; display: block; border-radius: 8px; }
-.header-text { display: flex; flex-direction: column; min-width: 0; }
-.header-title { font-weight: 700; }
-.header-sub { color: #bcd; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.header-actions { display: flex; align-items: center; gap: 8px; }
-@media (max-width: 480px) {
-  .header-hero { min-height: 72px; padding: 10px 12px; }
-  .header-logo { width: 48px; }
-}
-
 </style>
 </head>
 <body>
-
 <header>
-  <div class="header-hero">
-    <div class="header-left">
-      <img src="ecues-192.png" alt="Logo ECUES" class="header-logo">
-      <div class="header-text">
-        <div class="header-title">SAME – ECUES</div>
-        <div class="header-sub">Sexo: <span id="restanteSexo">0</span> sin clasificar • Edad: <span id="restanteEdad">0</span> sin clasificar</div>
-      </div>
+<div style='text-align:center; margin-top:10px;'>
+<img src='ecues-192.png' alt='Logo ECUES' style='width:100px; height:auto;'>
+</div>
+  <div class="row" style="justify-content: space-between;">
+    <div>
+      <h1>SAME – ECUES</h1>
     </div>
-    <div class="header-actions">
+    <div class="row">
+      <button class="btn small" id="btnExport">Exportar JSON</button>
+      <button class="btn small" id="btnExportPDF">Exportar PDF</button>
       <button class="btn small warn" id="btnReset">Reset</button>
     </div>
   </div>
-  <div class="total" style="margin-top:10px; justify-content: space-between; padding: 0 4px;">
+  <div class="muted" style="margin-top:8px;">
+    Sexo: <span id="restanteSexo">0</span> sin clasificar • 
+    Edad: <span id="restanteEdad">0</span> sin clasificar
+  </div>
+  <div class="total" style="margin-top:10px; justify-content: space-between;">
     <div class="row" style="gap:10px;">
       <span>Hasta ahora</span>
       <span class="big-number" id="pacientesTotal">0</span>
       <span>pacientes</span>
     </div>
-    <div class="row"></div>
   </div>
 </header>
-
 
 <main id="main">
   <section>
