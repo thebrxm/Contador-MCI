@@ -15,3 +15,10 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); });
+
+document.getElementById('btnWhatsapp').addEventListener('click', function() {
+    const resumen = gerarResumo(); // mesma função que o copiar usa
+    const mensaje = encodeURIComponent(resumen);
+    const url = `https://wa.me/?text=${mensaje}`;
+    window.open(url, '_blank');
+});
