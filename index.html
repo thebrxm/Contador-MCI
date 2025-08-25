@@ -186,6 +186,108 @@
     </div>
   </section>
 
+  <section id="TRANSLADOS">
+    <h2>Destino traslados (hasta 3 hospitales)</h2>
+    <div class="muted" id="hospRestantesInfo">Restantes por asignar: <span id="hospRestantes">0</span></div>
+    <div class="grid-2" style="margin-top:10px;">
+      <div class="counter" data-hosp="1">
+        <span class="label" style="flex:1;">
+          <select id="hosp1_sel" style="width:100%;height:40px;border-radius:10px;border:1px solid #1f2937;background:#0b1221;color:#e5e7eb;padding:8px;">
+            <option value="">— Seleccionar hospital —</option>
+            <option>HOSPITAL PENNA</option>
+            <option>HOSPITAL ARGERICH</option>
+            <option>HOSPITAL RAMOS MEJIA</option>
+            <option>HOSPITAL FERNANDEZ</option>
+            <option>HOSPITAL RIVADAVIA</option>
+            <option>HOSPITAL PIROVANO</option>
+            <option>HOSPITAL TORNU</option>
+            <option>HOSPITAL SANTOJANNI</option>
+            <option>HOSPITAL PIÑERO</option>
+            <option>HOSPITAL GRIERSON</option>
+            <option>HOSPITAL ZUBIZARRETA</option>
+            <option>HOSPITAL VELEZ SARSFIELD</option>
+            <option>HOSPITAL ALVAREZ</option>
+            <option>HOSPITAL DURAND</option>
+            <option>HOSPITAL MUÑIZ</option>
+            <option>HOSPITAL SANTA LUCIA</option>
+            <option>HOSPITAL GUTIERREZ</option>
+            <option>HOSPITAL ELIZALDE</option>
+            <option>OTROS</option>
+          </select>
+        </span>
+        <div class="controls">
+          <button class="btn" data-hinc="-">−</button>
+          <span class="value" id="hosp1_cnt">0</span>
+          <button class="btn primary" data-hinc="+">+</button>
+        </div>
+      </div>
+
+      <div class="counter" data-hosp="2">
+        <span class="label" style="flex:1;">
+          <select id="hosp2_sel" style="width:100%;height:40px;border-radius:10px;border:1px solid #1f2937;background:#0b1221;color:#e5e7eb;padding:8px;">
+            <option value="">— Seleccionar hospital —</option>
+            <option>HOSPITAL PENNA</option>
+            <option>HOSPITAL ARGERICH</option>
+            <option>HOSPITAL RAMOS MEJIA</option>
+            <option>HOSPITAL FERNANDEZ</option>
+            <option>HOSPITAL RIVADAVIA</option>
+            <option>HOSPITAL PIROVANO</option>
+            <option>HOSPITAL TORNU</option>
+            <option>HOSPITAL SANTOJANNI</option>
+            <option>HOSPITAL PIÑERO</option>
+            <option>HOSPITAL GRIERSON</option>
+            <option>HOSPITAL ZUBIZARRETA</option>
+            <option>HOSPITAL VELEZ SARSFIELD</option>
+            <option>HOSPITAL ALVAREZ</option>
+            <option>HOSPITAL DURAND</option>
+            <option>HOSPITAL MUÑIZ</option>
+            <option>HOSPITAL SANTA LUCIA</option>
+            <option>HOSPITAL GUTIERREZ</option>
+            <option>HOSPITAL ELIZALDE</option>
+            <option>OTROS</option>
+          </select>
+        </span>
+        <div class="controls">
+          <button class="btn" data-hinc="-">−</button>
+          <span class="value" id="hosp2_cnt">0</span>
+          <button class="btn primary" data-hinc="+">+</button>
+        </div>
+      </div>
+
+      <div class="counter" data-hosp="3">
+        <span class="label" style="flex:1;">
+          <select id="hosp3_sel" style="width:100%;height:40px;border-radius:10px;border:1px solid #1f2937;background:#0b1221;color:#e5e7eb;padding:8px;">
+            <option value="">— Seleccionar hospital —</option>
+            <option>HOSPITAL PENNA</option>
+            <option>HOSPITAL ARGERICH</option>
+            <option>HOSPITAL RAMOS MEJIA</option>
+            <option>HOSPITAL FERNANDEZ</option>
+            <option>HOSPITAL RIVADAVIA</option>
+            <option>HOSPITAL PIROVANO</option>
+            <option>HOSPITAL TORNU</option>
+            <option>HOSPITAL SANTOJANNI</option>
+            <option>HOSPITAL PIÑERO</option>
+            <option>HOSPITAL GRIERSON</option>
+            <option>HOSPITAL ZUBIZARRETA</option>
+            <option>HOSPITAL VELEZ SARSFIELD</option>
+            <option>HOSPITAL ALVAREZ</option>
+            <option>HOSPITAL DURAND</option>
+            <option>HOSPITAL MUÑIZ</option>
+            <option>HOSPITAL SANTA LUCIA</option>
+            <option>HOSPITAL GUTIERREZ</option>
+            <option>HOSPITAL ELIZALDE</option>
+            <option>OTROS</option>
+          </select>
+        </span>
+        <div class="controls">
+          <button class="btn" data-hinc="-">−</button>
+          <span class="value" id="hosp3_cnt">0</span>
+          <button class="btn primary" data-hinc="+">+</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section>
     <h2>Notas</h2>
     <textarea id="notas" placeholder="Observaciones rápidas..." style="width:100%;height:100px;border-radius:12px;border:1px solid #1f2937;background:#0b1221;color:#e5e7eb;padding:10px;"></textarea>
@@ -462,80 +564,211 @@
 })();
 </script>
 
+
+
+
 <script>
- function buildResumen() {
-    const d = k => parseInt(localStorage.getItem(k) || '0', 10) || 0;
-    const total = d('proc_atendidos') + d('proc_trasladados');
-    const incidente = (localStorage.getItem('titulo_text') || '').trim();
-    const direccion = (localStorage.getItem('direccion_text') || '').trim();
-    const notas = (localStorage.getItem('notas_text') || '').trim();
-    return [
-      `Incidente: ${incidente}`,
-      `Dirección: ${direccion}`,
-      ``,
-      `Hasta ahora ${total} pacientes`,
-      ``,
-      `Sexo:`,
-      `* ${d('sexo_f')} Femeninos.`,
-      `* ${d('sexo_m')} Masculinos.`,
-      `* ${d('sexo_sd')} S/D`,
-      ``,
-      `Edad:`,
-      `* ${d('edad_menores')} Menores`,
-      `* ${d('edad_mayores')} Mayores`,
-      `* ${d('edad_sd')} S/D`,
-      ``,
-      `Procedimiento`,
-      `* ${d('proc_atendidos')} Atendidos en el lugar:`,
-      `* ${d('proc_trasladados')} trasladados`,
-      ``,
-      `Dotación:`,
-      `* ${d('dot_moviles')} Móviles`,
-      `* ${d('dot_aereo')} Aéreo`,
-      ``,
-      `Notas:`,
-      notas
-    ].join('\n');
-  }
+(function(){
+  // Keys for hospital selects and counters
+  const HOSP = [
+    { sel: 'hosp1_sel', cnt: 'hosp1_cnt' },
+    { sel: 'hosp2_sel', cnt: 'hosp2_cnt' },
+    { sel: 'hosp3_sel', cnt: 'hosp3_cnt' }
+  ];
 
-  function abrirWhatsApp(texto) {
-  const t = encodeURIComponent(texto);
+  const $ = s => document.querySelector(s);
+  const num = v => Math.max(0, parseInt(v, 10) || 0);
+  const get = k => num(localStorage.getItem(k));
+  const set = (k, v) => localStorage.setItem(k, String(num(v)));
 
-  // 1) iOS/Android modernos: usar o Share Sheet (inclui WhatsApp)
-  if (navigator.share) {
-    navigator.share({ text: texto }).catch(() => {
-      // se o usuário cancelar, não faz nada
+  function totalTrasladados(){ return num(localStorage.getItem('proc_trasladados')); }
+  function sumHosp(){ return HOSP.reduce((s,h)=> s + get(h.cnt), 0); }
+  function hospRestantes(){ return Math.max(totalTrasladados() - sumHosp(), 0); }
+
+  function writeHospUI(){
+    // Update counts
+    HOSP.forEach(h => {
+      const el = document.getElementById(h.cnt);
+      if (el) el.textContent = get(h.cnt);
     });
-    return;
+    // Update remaining
+    const rest = document.getElementById('hospRestantes');
+    if (rest) rest.textContent = hospRestantes();
   }
 
-  // 2) Fallback: links oficiais do WhatsApp (dois domínios)
-  const url1 = 'https://wa.me/?text=' + t;
-  const url2 = 'https://api.whatsapp.com/send?text=' + t;
+  // Restore selects + persist on change
+  HOSP.forEach(h => {
+    const sel = document.getElementById(h.sel);
+    if (!sel) return;
+    const saved = localStorage.getItem(h.sel) || '';
+    if (saved) sel.value = saved;
+    sel.addEventListener('change', () => {
+      localStorage.setItem(h.sel, sel.value || '');
+    });
+  });
 
-  // iOS PWA precisa abrir na MESMA aba (_self), não em pop-up:
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  // Init counters if missing
+  HOSP.forEach(h => { if (localStorage.getItem(h.cnt) === null) set(h.cnt, 0); });
 
-  const a = document.createElement('a');
-  a.href = url1;
-  a.rel = 'noopener';
-  a.target = isStandalone ? '_self' : '_blank';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+  // Clicks on + / −
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-hinc]');
+    if (!btn) return;
+    const box = btn.closest('[data-hosp]');
+    if (!box) return;
 
-  // fallback extra (algumas versões do iOS preferem api.whatsapp.com)
-  setTimeout(() => {
-    if (document.visibilityState === 'visible') {
-      // ainda na página => tenta a outra URL
-      location.href = url2;
+    const idx = parseInt(box.getAttribute('data-hosp'), 10) - 1;
+    const keyCnt = HOSP[idx].cnt;
+    const keySel = HOSP[idx].sel;
+    const inc = btn.getAttribute('data-hinc') === '+' ? 1 : -1;
+
+    // Must choose hospital before adding
+    const chosen = (document.getElementById(keySel)?.value || '').trim();
+    if (inc > 0 && !chosen){
+      alert('Seleccione un hospital primero.');
+      return;
     }
-  }, 800);
+
+    let cur = get(keyCnt);
+    if (inc > 0){
+      if (hospRestantes() <= 0){
+        alert('No puede superar el total de trasladados.');
+        return;
+      }
+      cur += 1;
+    } else {
+      if (cur <= 0) return;
+      cur -= 1;
+    }
+    set(keyCnt, cur);
+    writeHospUI();
+  });
+
+  // Clamp if "Trasladados" changes elsewhere (e.g., buttons or Reset)
+  const __origSetItem = localStorage.setItem;
+  localStorage.setItem = function(k, v){
+    __origSetItem.apply(this, arguments);
+    if (k === 'proc_trasladados'){
+      const total = totalTrasladados();
+      // If sum of hospital counts > total, reduce from the last ones
+      let c = HOSP.map(h => get(h.cnt));
+      let sum = c.reduce((a,b)=>a+b,0);
+      if (sum > total){
+        let over = sum - total;
+        for (let i = HOSP.length - 1; i >= 0 && over > 0; i--){
+          const take = Math.min(c[i], over);
+          c[i] -= take;
+          set(HOSP[i].cnt, c[i]);
+          over -= take;
+        }
+      }
+      writeHospUI();
+    }
+  };
+
+  // Show UI on load
+  document.addEventListener('DOMContentLoaded', writeHospUI);
+
+  // Expose breakdown for resumen/PDF
+  window.__getHospBreakdown = function(){
+    const out = [];
+    HOSP.forEach(h => {
+      const name = (document.getElementById(h.sel)?.value || '').trim();
+      const n = get(h.cnt);
+      if (name && n > 0) out.push({ name, n });
+    });
+    return out;
+  };
+})();
+</script>
+
+
+
+
+
+<script>
+function buildResumen() {
+  const d = k => parseInt(localStorage.getItem(k) || '0', 10) || 0;
+  const total = d('proc_atendidos') + d('proc_trasladados');
+  const incidente = (localStorage.getItem('titulo_text') || '').trim();
+  const direccion = (localStorage.getItem('direccion_text') || '').trim();
+  const notas = (localStorage.getItem('notas_text') || '').trim();
+
+  const lines = [
+    `Incidente: ${incidente}`,
+    `Dirección: ${direccion}`,
+    ``,
+    `Hasta ahora ${total} pacientes`,
+    ``,
+    `Sexo:`,
+    `* ${d('sexo_f')} Femeninos.`,
+    `* ${d('sexo_m')} Masculinos.`,
+    `* ${d('sexo_sd')} S/D`,
+    ``,
+    `Edad:`,
+    `* ${d('edad_menores')} Menores`,
+    `* ${d('edad_mayores')} Mayores`,
+    `* ${d('edad_sd')} S/D`,
+    ``,
+    `Procedimiento`,
+    `* ${d('proc_atendidos')} Atendidos en el lugar:`,
+    `* ${d('proc_trasladados')} trasladados`
+  ];
+
+  // Agregar desglose de hospitales
+  const br = (window.__getHospBreakdown ? window.__getHospBreakdown() : []);
+  if (br && br.length){
+    br.forEach(({name,n}) => lines.push(`  - ${n} → ${name}`));
+  }
+
+  lines.push(
+    ``,
+    `Dotación:`,
+    `* ${d('dot_moviles')} Móviles`,
+    `* ${d('dot_aereo')} Aéreo`,
+    ``,
+    `Notas:`,
+    notas
+  );
+
+  return lines.join('\n');
 }
 
-document.getElementById('btnWhatsapp').addEventListener('click', () => {
-  const texto = buildResumen(); // ou sua função atual
-  abrirWhatsApp(texto);
+function abrirWhatsApp(texto) {
+  if (navigator.share) { navigator.share({ text: texto }).catch(()=>{}); return; }
+  const t = encodeURIComponent(texto);
+  const url1 = 'https://wa.me/?text=' + t;
+  const url2 = 'https://api.whatsapp.com/send?text=' + t;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const a = document.createElement('a'); a.href = url1; a.rel='noopener'; a.target = isStandalone ? '_self' : '_blank';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => { if (document.visibilityState === 'visible') location.href = url2; }, 800);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btnCopy = document.getElementById('btnCopy');
+  if (btnCopy){
+    btnCopy.onclick = () => {
+      const texto = buildResumen();
+      navigator.clipboard.writeText(texto).then(()=> alert('Resumen copiado.'));
+    };
+  }
+  const btnW = document.getElementById('btnWhatsapp');
+  if (btnW){
+    btnW.onclick = () => abrirWhatsApp(buildResumen());
+  }
+  const btnPDF = document.getElementById('btnExportPDF');
+  if (btnPDF){
+    btnPDF.onclick = () => {
+      const texto = buildResumen();
+      const blob = new Blob([texto], {type:'application/pdf'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'reporte_SAME_ECUES.pdf';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+  }
 });
 </script>
 
