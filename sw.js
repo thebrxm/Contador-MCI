@@ -1,4 +1,4 @@
-const CACHE = 'contador-mci-v6'; // mude o sufixo pra forçar atualização
+const CACHE = 'contador-mci-v6';
 const ASSETS = [
   './',
   './index.html',
