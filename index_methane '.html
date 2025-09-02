@@ -1,0 +1,1046 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="ecues-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="ecues-512.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAME – ECUES</title>
+<meta name="theme-color" content="#065f46">
+<style>
+  #btnExport, #btnExportPDF { display: none; }
+  :root { --gap: 12px; --pad: 14px; --radius: 14px; --font: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font); background:#0f172a; color:#e5e7eb; }
+  header { position: sticky; top: 0; z-index: 10; padding: var(--pad); background: #064e3b; border-bottom: 1px solid #065f46; }
+  h1 { font-size: 1.15rem; margin: 0 0 6px 0; font-weight: 700; }
+  .total { display: flex; align-items: center; gap: var(--gap); }
+  .big-number { font-variant-numeric: tabular-nums; font-size: 2.6rem; font-weight: 800; letter-spacing: .5px; }
+  .row { display:flex; align-items:center; gap:8px; }
+  .btn { touch-action: manipulation; user-select: none; border: none; border-radius: 12px; padding: 12px 14px; font-size: 1.15rem; background:#065f46; color:#fff; }
+  .btn:active { transform: scale(0.98); }
+  .btn.small { padding: 8px 10px; font-size: 0.98rem; border-radius: 10px; }
+  .btn.primary { background:#059669; }
+  .btn.warn { background:#dc2626; }
+  main { padding: var(--pad); display: grid; gap: var(--gap); }
+  section { background:#111827; border:1px solid #1f2937; border-radius: var(--radius); padding: var(--pad); }
+  section h2 { margin:0 0 10px 0; font-size:1.05rem; font-weight:700; letter-spacing:.2px; }
+  .counter { display:flex; justify-content: space-between; align-items:center; padding:10px; background:#0b1221; border-radius:12px; border:1px solid #1e293b; }
+  .label { font-size:1rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .value { font-variant-numeric: tabular-nums; font-size:1.6rem; min-width:3ch; text-align:right; }
+  .controls { display:flex; gap:8px; }
+  .footer { display:flex; gap:8px; flex-wrap: wrap; }
+  .muted { color:#9ca3af; font-size:.9rem; }
+  .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+  .flash-red { animation: flashRed 0.4s ease; }
+  @keyframes flashRed { 0% { background:#ff0000; } 100% { background:transparent; } }
+  .sd-disabled .btn { opacity:.5; pointer-events: none; }
+</style>
+</head>
+<body>
+<header>
+<div style='text-align:center; margin-top:10px;'>
+<img src='ecues-192.png' alt='Logo ECUES' style='width:100px; height:auto;'>
+</div>
+  <div class="row" style="justify-content: space-between;">
+    <div>
+      <h1>SAME – ECUES</h1>
+    </div>
+    <div class="row">
+      <button class="btn small" id="btnExport">Exportar JSON</button>
+      <button class="btn small" id="btnExportPDF">Exportar PDF</button>
+      <button class="btn small warn" id="btnReset">Reset</button>
+    </div>
+  </div>
+  <div class="muted" style="margin-top:8px;">
+    Sexo: <span id="restanteSexo">0</span> sin clasificar • 
+    Edad: <span id="restanteEdad">0</span> sin clasificar
+  </div>
+  <div class="total" style="margin-top:10px; justify-content: space-between;">
+    <div class="row" style="gap:10px;">
+      <span>Hasta ahora</span>
+      <span class="big-number" id="pacientesTotal">0</span>
+      <span>pacientes</span>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section>
+    <h2>Incidente</h2>
+    <input id="titulo" type="text" placeholder="Ej.: INCENDIO" 
+      style="width:100%;height:44px;border-radius:12px;border:1px solid #1f2937;background:#0b1221;color:#e5e7eb;padding:10px;">
+  </div>
+</section>
+
+  <section>
+    <h2>Dirección</h2>
+    <input id="direccion" type="text" placeholder="Ej.: Av. 9 de Julio y Av. Cordoba (Microcentro)" 
+      style="width:100%;height:44px;border-radius:12px;border:1px solid #1f2937;background:#0b1221;color:#e5e7eb;padding:10px;">
+  </div>
+</section>
+
+  <section>
+    <h2>Sexo</h2>
+    <div class="grid-2">
+      <div class="counter" data-key="sexo_f">
+        <span class="label">Femeninos</span>
+        <div class="controls">
+          <button class="btn" data-action="-">−</button>
+          <span class="value" data-value>0</span>
+          <button class="btn primary" data-action="+">+</button>
+        </div>
+      </div>
+      <div class="counter" data-key="sexo_m">
+        <span class="label">Masculinos</span>
+        <div class="controls">
+          <button class="btn" data-action="-">−</button>
+          <span class="value" data-value>0</span>
+          <button class="btn primary" data-action="+">+</button>
+        </div>
+      </div>
+      <div class="counter sd-disabled" data-key="sexo_sd">
+        <span class="label">S/D (automático)</span>
+        <div class="controls">
+          <button class="btn" data-action="-">−</button>
+          <span class="value" data-value>0</span>
+          <button class="btn primary" data-action="+">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <section>
+    <h2>Edad</h2>
+    <div class="grid-2">
+      <div class="counter" data-key="edad_menores">
+        <span class="label">Menores</span>
+        <div class="controls">
+          <button class="btn" data-action="-">−</button>
+          <span class="value" data-value>0</span>
+          <button class="btn primary" data-action="+">+</button>
+        </div>
+      </div>
+      <div class="counter" data-key="edad_mayores">
+        <span class="label">Mayores</span>
+        <div class="controls">
+          <button class="btn" data-action="-">−</button>
+          <span class="value" data-value>0</span>
+          <button class="btn primary" data-action="+">+</button>
+        </div>
+      </div>
+      <div class="counter sd-disabled" data-key="edad_sd">
+        <span class="label">S/D (automático)</span>
+        <div class="controls">
+          <button class="btn" data-action="-">−</button>
+          <span class="value" data-value>0</span>
+          <button class="btn primary" data-action="+">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+ <section>
+    <h2>Procedimiento</h2>
+    <div class="grid-2">
+      <div class="counter" data-key="proc_atendidos">
+        <span class="label">Atendidos en el lugar</span>
+        <div class="controls">
+          <button class="btn" data-action="-">−</button>
+          <span class="value" data-value>0</span>
+          <button class="btn primary" data-action="+">+</button>
+        </div>
+      </div>
+      <div class="counter" data-key="proc_trasladados">
+        <span class="label">Trasladados</span>
+        <div class="controls">
+          <button class="btn" data-action="-">−</button>
+          <span class="value" data-value>0</span>
+          <button class="btn primary" data-action="+">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+ 
+  <section>
+    <h2>Dotación</h2>
+    <div class="grid-2">
+      <div class="counter" data-key="dot_moviles">
+        <span class="label">Móviles</span>
+        <div class="controls">
+          <button class="btn" data-action="-">−</button>
+          <span class="value" data-value>0</span>
+          <button class="btn primary" data-action="+">+</button>
+        </div>
+      </div>
+      <div class="counter" data-key="dot_aereo">
+        <span class="label">Aéreo</span>
+        <div class="controls">
+          <button class="btn" data-action="-">−</button>
+          <span class="value" data-value>0</span>
+          <button class="btn primary" data-action="+">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <section id="TRANSLADOS">
+  <h2>Destino traslados (hospitales)</h2>
+  <div class="muted" id="hospRestantesInfo">Restantes por asignar: <span id="hospRestantes">0</span></div>
+  <div style="margin:8px 0 12px;">
+    <button class="btn small" id="addHosp">➕ Añadir destino</button>
+  </div>
+  <div id="hospList" class="grid-2" style="margin-top:10px;">
+    <h2>Destino traslados (hasta 3 hospitales)</h2>
+    <div class="muted" id="hospRestantesInfo">Restantes por asignar: <span id="hospRestantes">0</span></div>
+    <div class="grid-2" style="margin-top:10px;">
+      <div class="counter" data-hosp="1">
+        <span class="label" style="flex:1;">
+          <select id="hosp1_sel" style="width:70%;height:40px;border-radius:10px;border:1px solid #1f2937;background:#0b1221;color:#e5e7eb;padding:8px;">
+            <option value="">— Seleccionar hospital —</option>
+            <option>HOSPITAL PENNA</option>
+            <option>HOSPITAL ARGERICH</option>
+            <option>HOSPITAL RAMOS MEJIA</option>
+            <option>HOSPITAL FERNANDEZ</option>
+            <option>HOSPITAL RIVADAVIA</option>
+            <option>HOSPITAL PIROVANO</option>
+            <option>HOSPITAL TORNU</option>
+            <option>HOSPITAL SANTOJANNI</option>
+            <option>HOSPITAL PIÑERO</option>
+            <option>HOSPITAL GRIERSON</option>
+            <option>HOSPITAL ZUBIZARRETA</option>
+            <option>HOSPITAL VELEZ SARSFIELD</option>
+            <option>HOSPITAL ALVAREZ</option>
+            <option>HOSPITAL DURAND</option>
+            <option>HOSPITAL MUÑIZ</option>
+            <option>HOSPITAL SANTA LUCIA</option>
+            <option>HOSPITAL GUTIERREZ</option>
+            <option>HOSPITAL ELIZALDE</option>
+            <option>OTROS</option>
+          </select>
+        </span>
+        <div class="controls">
+          <button class="btn" data-hinc="-">−</button>
+          <span class="value" id="hosp1_cnt">0</span>
+          <button class="btn primary" data-hinc="+">+</button>
+        </div>
+      </div>
+
+      <div class="counter" data-hosp="2">
+        <span class="label" style="flex:1;">
+          <select id="hosp2_sel" style="width:70%;height:40px;border-radius:10px;border:1px solid #1f2937;background:#0b1221;color:#e5e7eb;padding:8px;">
+            <option value="">— Seleccionar hospital —</option>
+            <option>HOSPITAL PENNA</option>
+            <option>HOSPITAL ARGERICH</option>
+            <option>HOSPITAL RAMOS MEJIA</option>
+            <option>HOSPITAL FERNANDEZ</option>
+            <option>HOSPITAL RIVADAVIA</option>
+            <option>HOSPITAL PIROVANO</option>
+            <option>HOSPITAL TORNU</option>
+            <option>HOSPITAL SANTOJANNI</option>
+            <option>HOSPITAL PIÑERO</option>
+            <option>HOSPITAL GRIERSON</option>
+            <option>HOSPITAL ZUBIZARRETA</option>
+            <option>HOSPITAL VELEZ SARSFIELD</option>
+            <option>HOSPITAL ALVAREZ</option>
+            <option>HOSPITAL DURAND</option>
+            <option>HOSPITAL MUÑIZ</option>
+            <option>HOSPITAL SANTA LUCIA</option>
+            <option>HOSPITAL GUTIERREZ</option>
+            <option>HOSPITAL ELIZALDE</option>
+            <option>OTROS</option>
+          </select>
+        </span>
+        <div class="controls">
+          <button class="btn" data-hinc="-">−</button>
+          <span class="value" id="hosp2_cnt">0</span>
+          <button class="btn primary" data-hinc="+">+</button>
+        </div>
+      </div>
+
+      <div class="counter" data-hosp="3">
+        <span class="label" style="flex:1;">
+          <select id="hosp3_sel" style="width:70%;height:40px;border-radius:10px;border:1px solid #1f2937;background:#0b1221;color:#e5e7eb;padding:8px;">
+            <option value="">— Seleccionar hospital —</option>
+            <option>HOSPITAL PENNA</option>
+            <option>HOSPITAL ARGERICH</option>
+            <option>HOSPITAL RAMOS MEJIA</option>
+            <option>HOSPITAL FERNANDEZ</option>
+            <option>HOSPITAL RIVADAVIA</option>
+            <option>HOSPITAL PIROVANO</option>
+            <option>HOSPITAL TORNU</option>
+            <option>HOSPITAL SANTOJANNI</option>
+            <option>HOSPITAL PIÑERO</option>
+            <option>HOSPITAL GRIERSON</option>
+            <option>HOSPITAL ZUBIZARRETA</option>
+            <option>HOSPITAL VELEZ SARSFIELD</option>
+            <option>HOSPITAL ALVAREZ</option>
+            <option>HOSPITAL DURAND</option>
+            <option>HOSPITAL MUÑIZ</option>
+            <option>HOSPITAL SANTA LUCIA</option>
+            <option>HOSPITAL GUTIERREZ</option>
+            <option>HOSPITAL ELIZALDE</option>
+            <option>OTROS</option>
+          </select>
+        </span>
+        <div class="controls">
+          <button class="btn" data-hinc="-">−</button>
+          <span class="value" id="hosp3_cnt">0</span>
+          <button class="btn primary" data-hinc="+">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="METHANE">
+  <h2>METHANE</h2>
+  <label>M</label>
+  <input id="methane_m" type="text" placeholder="Ej.: Sí / No">
+
+  <label>E</label>
+  <input id="methane_e1" type="text" placeholder="Ej.: Dirección exacta">
+
+  <label>T</label>
+  <input id="methane_t" type="text" placeholder="Ej.: Incendio, explosión...">
+
+  <label>H</label>
+  <input id="methane_h" type="text" placeholder="Ej.: Químicos, humo...">
+
+  <label>A</label>
+  <input id="methane_a" type="text" placeholder="Ej.: Noria">
+
+  <label>N</label>
+  <input id="methane_n" type="text" placeholder="Ej.: 5 heridos">
+
+  <label>E</label>
+  <input id="methane_e2" type="text" placeholder="Ej.: SAME, Bomberos, Policía">
+</section>
+  
+  <section class="footer">
+    <button class="btn small" id="btnCopy">Copiar resumen</button>
+    <button id="btnWhatsapp" class="btn btn-success">Enviar vía WhatsApp</button>
+    <span class="muted" id="lastSaved">Guardado…</span>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  const TOTAL_KEY = 'pacientes_total';
+  const TITLE_KEY = 'titulo_text';
+  const DIR_KEY = 'direccion_text';
+  const NOTE_KEY = 'notas_text';
+
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
+  const num = v => Math.max(0, parseInt(v,10) || 0);
+  const get = k => num(localStorage.getItem(k));
+  const set = (k,v) => localStorage.setItem(k, String(num(v)));
+
+  function totalPacientes(){
+    return get('proc_atendidos') + get('proc_trasladados');
+  }
+
+  function writeUI(key){
+    const box = document.querySelector(`.counter[data-key="${key}"]`);
+    if (!box) return;
+    box.querySelector('[data-value]').textContent = get(key);
+  }
+
+  function flashSD(selector){
+    const el = document.querySelector(selector);
+    if (!el) return;
+    el.classList.add('flash-red');
+    setTimeout(()=>el.classList.remove('flash-red'), 400);
+  }
+
+  // Redistribui S/D de SEXO com base em F + M e total
+  function redistributeSexo(){
+    const total = totalPacientes();
+    const f = get('sexo_f');
+    const m = get('sexo_m');
+    const sd = Math.max(total - (f + m), 0);
+    set('sexo_sd', sd);
+    writeUI('sexo_sd');
+    flashSD('[data-key="sexo_sd"] [data-value]');
+    $('#restanteSexo').textContent = sd;
+  }
+
+  // Redistribui S/D de EDAD com base em Men + May e total
+  function redistributeEdad(){
+    const total = totalPacientes();
+    const men = get('edad_menores');
+    const may = get('edad_mayores');
+    const sd = Math.max(total - (men + may), 0);
+    set('edad_sd', sd);
+    writeUI('edad_sd');
+    flashSD('[data-key="edad_sd"] [data-value]');
+    $('#restanteEdad').textContent = sd;
+  }
+
+  function recalcTotal(){
+    const total = totalPacientes();
+    set(TOTAL_KEY, total);
+    $('#pacientesTotal').textContent = total;
+  }
+
+  function updateSaved(){
+    $('#lastSaved').textContent = 'Guardado: ' + new Date().toLocaleString();
+  }
+
+  function load(){
+    // carregar campos texto
+    $('#titulo').value = localStorage.getItem(TITLE_KEY) || '';
+    $('#direccion').value = localStorage.getItem(DIR_KEY) || '';
+    $('#notas').value = localStorage.getItem(NOTE_KEY) || '';
+
+    // carregar contadores
+    ['sexo_f','sexo_m','sexo_sd','edad_menores','edad_mayores','edad_sd','proc_atendidos','proc_trasladados','dot_moviles','dot_aereo']
+      .forEach(writeUI);
+
+    recalcTotal();
+    // Iniciar S/D como total quando F/M ou Men/May estão zerados
+    redistributeSexo();
+    redistributeEdad();
+    updateSaved();
+  }
+
+  // Delegação de clicks
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const box = btn.closest('.counter');
+    if (!box) return;
+    const key = box.dataset.key;
+    const action = btn.getAttribute('data-action');
+    const delta = action === '+' ? 1 : -1;
+
+    // Bloquear edição manual direta de S/D (é automático)
+    if (key === 'sexo_sd' || key === 'edad_sd') return;
+
+    // Procedimiento e Dotación: padrão
+    if (key.startsWith('proc_') || key.startsWith('dot_')){
+      set(key, get(key) + delta);
+      writeUI(key);
+      if (key.startsWith('proc_')){
+        recalcTotal();
+        // Sempre que total muda, recalcular S/Ds para redistribuir
+        redistributeSexo();
+        redistributeEdad();
+      }
+      updateSaved();
+      return;
+    }
+
+    // Sexo
+    if (key === 'sexo_f' || key === 'sexo_m'){
+      const total = totalPacientes();
+      const otherKey = key === 'sexo_f' ? 'sexo_m' : 'sexo_f';
+      const cur = get(key);
+      const other = get(otherKey);
+      let next = cur + delta;
+
+      // Impedir negativo
+      if (next < 0) next = 0;
+
+      // Clamp pelo total: f + m <= total
+      if (next + other > total){
+        next = Math.max(0, total - other);
+      }
+
+      set(key, next);
+      writeUI(key);
+      redistributeSexo(); // ajusta S/D automaticamente
+      updateSaved();
+      return;
+    }
+
+    // Edad
+    if (key === 'edad_menores' || key === 'edad_mayores'){
+      const total = totalPacientes();
+      const otherKey = key === 'edad_menores' ? 'edad_mayores' : 'edad_mayores' === key ? 'edad_menores' : 'edad_mayores';
+      const cur = get(key);
+      const other = get(otherKey);
+      let next = cur + delta;
+      if (next < 0) next = 0;
+      if (next + other > total){
+        next = Math.max(0, total - other);
+      }
+      set(key, next);
+      writeUI(key);
+      redistributeEdad();
+      updateSaved();
+      return;
+    }
+  });
+
+  // Inputs texto
+  $('#titulo').addEventListener('input', (e)=>{ localStorage.setItem(TITLE_KEY, e.target.value); updateSaved(); });
+  $('#direccion').addEventListener('input', (e)=>{ localStorage.setItem(DIR_KEY, e.target.value); updateSaved(); });
+  $('#notas').addEventListener('input', (e)=>{ localStorage.setItem(NOTE_KEY, e.target.value); updateSaved(); });
+
+  // Reset
+  $('#btnReset').addEventListener('click', () => {
+    if (!confirm('¿Reiniciar todos los contadores y limpiar Incidente/Dirección/Notas?')) return;
+    ['sexo_f','sexo_m','sexo_sd','edad_menores','edad_mayores','edad_sd','proc_atendidos','proc_trasladados','dot_moviles','dot_aereo']
+      .forEach(k => set(k, 0));
+    ['titulo_text','direccion_text','notas_text'].forEach(k => localStorage.removeItem(k));
+    ['sexo_f','sexo_m','sexo_sd','edad_menores','edad_mayores','edad_sd','proc_atendidos','proc_trasladados','dot_moviles','dot_aereo']
+      .forEach(writeUI);
+    $('#titulo').value = ''; $('#direccion').value = ''; $('#notas').value = '';
+    recalcTotal(); redistributeSexo(); redistributeEdad(); updateSaved();
+    alert('Listo: se reinició todo.');
+  });
+
+  // Export JSON
+  $('#btnExport').addEventListener('click', () => {
+    const data = {
+      incidente: localStorage.getItem(TITLE_KEY) || '',
+      direccion: localStorage.getItem(DIR_KEY) || '',
+      pacientes: totalPacientes(),
+      sexo_f: get('sexo_f'), sexo_m: get('sexo_m'), sexo_sd: get('sexo_sd'),
+      edad_menores: get('edad_menores'), edad_mayores: get('edad_mayores'), edad_sd: get('edad_sd'),
+      proc_atendidos: get('proc_atendidos'), proc_trasladados: get('proc_trasladados'),
+      dot_moviles: get('dot_moviles'), dot_aereo: get('dot_aereo'),
+      notas: localStorage.getItem(NOTE_KEY) || ''
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'contador_mci.json'; a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Export PDF (texto simples)
+  $('#btnExportPDF').addEventListener('click', () => {
+    const d = k => get(k);
+    const lines = [
+      `Incidente: ${(localStorage.getItem(TITLE_KEY)||'').trim()}`,
+      `Dirección: ${(localStorage.getItem(DIR_KEY)||'').trim()}`,
+      ``,
+      `Hasta ahora ${totalPacientes()} pacientes`,
+      ``,
+      `Sexo:`,
+      `* ${d('sexo_f')} Femeninos.`,
+      `* ${d('sexo_m')} Masculinos.`,
+      `* ${d('sexo_sd')} S/D`,
+      ``,
+      `Edad:`,
+      `* ${d('edad_menores')} Menores`,
+      `* ${d('edad_mayores')} Mayores`,
+      `* ${d('edad_sd')} S/D`,
+      ``,
+      `Procedimiento`,
+      `* ${d('proc_atendidos')} Atendidos en el lugar:`,
+      `* ${d('proc_trasladados')} trasladados`,
+      ``,
+      `Dotación:`,
+      `* ${d('dot_moviles')} Móviles`,
+      `* ${d('dot_aereo')} Aéreo`,
+      ``,
+      `Notas:`,
+      (localStorage.getItem(NOTE_KEY)||'').trim()
+    ];
+    const blob = new Blob([lines.join('\n')], {type:'application/pdf'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'reporte_SAME_ECUES.pdf';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  // Copiar resumen (com o formato que você mostrou)
+  $('#btnCopy').addEventListener('click', () => {
+    const d = k => get(k);
+    const lines = [
+      `Incidente: ${(localStorage.getItem(TITLE_KEY)||'').trim()}`,
+      `Dirección: ${(localStorage.getItem(DIR_KEY)||'').trim()}`,
+      ``,
+      `Hasta ahora ${totalPacientes()} pacientes`,
+      ``,
+      `Sexo:`,
+      `* ${d('sexo_f')} Femeninos.`,
+      `* ${d('sexo_m')} Masculinos.`,
+      `* ${d('sexo_sd')} S/D`,
+      ``,
+      `Edad:`,
+      `* ${d('edad_menores')} Menores`,
+      `* ${d('edad_mayores')} Mayores`,
+      `* ${d('edad_sd')} S/D`,
+      ``,
+      `Procedimiento`,
+      `* ${d('proc_atendidos')} Atendidos en el lugar:`,
+      `* ${d('proc_trasladados')} trasladados`,
+      ``,
+      `Dotación:`,
+      `* ${d('dot_moviles')} Móviles`,
+      `* ${d('dot_aereo')} Aéreo`,
+      ``,
+      `Notas:`,
+      (localStorage.getItem(NOTE_KEY)||'').trim()
+    ];
+    navigator.clipboard.writeText(lines.join('\n')).then(()=>alert('Resumen copiado.'));
+  });
+
+  // Init
+  load();
+})();
+</script>
+
+
+
+
+<script>
+(function(){
+  // Keys for hospital selects and counters
+  const HOSP = [
+    { sel: 'hosp1_sel', cnt: 'hosp1_cnt' },
+    { sel: 'hosp2_sel', cnt: 'hosp2_cnt' },
+    { sel: 'hosp3_sel', cnt: 'hosp3_cnt' }
+  ];
+
+  const $ = s => document.querySelector(s);
+  const num = v => Math.max(0, parseInt(v, 10) || 0);
+  const get = k => num(localStorage.getItem(k));
+  const set = (k, v) => localStorage.setItem(k, String(num(v)));
+
+  function totalTrasladados(){ return num(localStorage.getItem('proc_trasladados')); }
+  function sumHosp(){ return HOSP.reduce((s,h)=> s + get(h.cnt), 0); }
+  function hospRestantes(){ return Math.max(totalTrasladados() - sumHosp(), 0); }
+
+  function writeHospUI(){
+    // Update counts
+    HOSP.forEach(h => {
+      const el = document.getElementById(h.cnt);
+      if (el) el.textContent = get(h.cnt);
+    });
+    // Update remaining
+    const rest = document.getElementById('hospRestantes');
+    if (rest) rest.textContent = hospRestantes();
+  }
+
+  // Restore selects + persist on change
+  HOSP.forEach(h => {
+    const sel = document.getElementById(h.sel);
+    if (!sel) return;
+    const saved = localStorage.getItem(h.sel) || '';
+    if (saved) sel.value = saved;
+    sel.addEventListener('change', () => {
+      localStorage.setItem(h.sel, sel.value || '');
+    });
+  });
+
+  // Init counters if missing
+  HOSP.forEach(h => { if (localStorage.getItem(h.cnt) === null) set(h.cnt, 0); });
+
+  // Clicks on + / −
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-hinc]');
+    if (!btn) return;
+    const box = btn.closest('[data-hosp]');
+    if (!box) return;
+
+    const idx = parseInt(box.getAttribute('data-hosp'), 10) - 1;
+    const keyCnt = HOSP[idx].cnt;
+    const keySel = HOSP[idx].sel;
+    const inc = btn.getAttribute('data-hinc') === '+' ? 1 : -1;
+
+    // Must choose hospital before adding
+    const chosen = (document.getElementById(keySel)?.value || '').trim();
+    if (inc > 0 && !chosen){
+      alert('Seleccione un hospital primero.');
+      return;
+    }
+
+    let cur = get(keyCnt);
+    if (inc > 0){
+      if (hospRestantes() <= 0){
+        alert('No puede superar el total de trasladados.');
+        return;
+      }
+      cur += 1;
+    } else {
+      if (cur <= 0) return;
+      cur -= 1;
+    }
+    set(keyCnt, cur);
+    writeHospUI();
+  });
+
+  // Clamp if "Trasladados" changes elsewhere (e.g., buttons or Reset)
+  const __origSetItem = localStorage.setItem;
+  localStorage.setItem = function(k, v){
+    __origSetItem.apply(this, arguments);
+    if (k === 'proc_trasladados'){
+      const total = totalTrasladados();
+      // If sum of hospital counts > total, reduce from the last ones
+      let c = HOSP.map(h => get(h.cnt));
+      let sum = c.reduce((a,b)=>a+b,0);
+      if (sum > total){
+        let over = sum - total;
+        for (let i = HOSP.length - 1; i >= 0 && over > 0; i--){
+          const take = Math.min(c[i], over);
+          c[i] -= take;
+          set(HOSP[i].cnt, c[i]);
+          over -= take;
+        }
+      }
+      writeHospUI();
+    }
+  };
+
+  // Show UI on load
+  document.addEventListener('DOMContentLoaded', writeHospUI);
+
+  // Expose breakdown for resumen/PDF
+  window.__getHospBreakdown = function(){
+    const out = [];
+    HOSP.forEach(h => {
+      const name = (document.getElementById(h.sel)?.value || '').trim();
+      const n = get(h.cnt);
+      if (name && n > 0) out.push({ name, n });
+    });
+    return out;
+  };
+})();
+</script>
+
+
+
+
+
+<script>
+function buildResumen() {
+  const d = k => parseInt(localStorage.getItem(k) || '0', 10) || 0;
+  const total = d('proc_atendidos') + d('proc_trasladados');
+  const incidente = (localStorage.getItem('titulo_text') || '').trim();
+  const direccion = (localStorage.getItem('direccion_text') || '').trim();
+  const notas = (localStorage.getItem('notas_text') || '').trim();
+
+  const lines = [
+    `Incidente: ${incidente}`,
+    `Dirección: ${direccion}`,
+    ``,
+    `Hasta ahora ${total} pacientes`,
+    ``,
+    `Sexo:`,
+    `* ${d('sexo_f')} Femeninos.`,
+    `* ${d('sexo_m')} Masculinos.`,
+    `* ${d('sexo_sd')} S/D`,
+    ``,
+    `Edad:`,
+    `* ${d('edad_menores')} Menores`,
+    `* ${d('edad_mayores')} Mayores`,
+    `* ${d('edad_sd')} S/D`,
+    ``,
+    `Procedimiento`,
+    `* ${d('proc_atendidos')} Atendidos en el lugar:`,
+    `* ${d('proc_trasladados')} trasladados`
+  ];
+
+  // Agregar desglose de hospitales
+  const br = (window.__getHospBreakdown ? window.__getHospBreakdown() : []);
+  if (br && br.length){
+    br.forEach(({name,n}) => lines.push(`  - ${n} → ${name}`));
+  }
+
+  lines.push(
+    ``,
+    `Dotación:`,
+    `* ${d('dot_moviles')} Móviles`,
+    `* ${d('dot_aereo')} Aéreo`,
+    ``,
+    `Notas:`,
+    notas
+  );
+
+  return lines.join('\n');
+}
+
+function abrirWhatsApp(texto) {
+  if (navigator.share) { navigator.share({ text: texto }).catch(()=>{}); return; }
+  const t = encodeURIComponent(texto);
+  const url1 = 'https://wa.me/?text=' + t;
+  const url2 = 'https://api.whatsapp.com/send?text=' + t;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const a = document.createElement('a'); a.href = url1; a.rel='noopener'; a.target = isStandalone ? '_self' : '_blank';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => { if (document.visibilityState === 'visible') location.href = url2; }, 800);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btnCopy = document.getElementById('btnCopy');
+  if (btnCopy){
+    btnCopy.onclick = () => {
+      const texto = buildResumen();
+      navigator.clipboard.writeText(texto).then(()=> alert('Resumen copiado.'));
+    };
+  }
+  const btnW = document.getElementById('btnWhatsapp');
+  if (btnW){
+    btnW.onclick = () => abrirWhatsApp(buildResumen());
+  }
+  const btnPDF = document.getElementById('btnExportPDF');
+  if (btnPDF){
+    btnPDF.onclick = () => {
+      const texto = buildResumen();
+      const blob = new Blob([texto], {type:'application/pdf'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'reporte_SAME_ECUES.pdf';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+  }
+});
+</script>
+
+
+<script>
+(function(){
+  const MAX_DESTINOS = 6;
+  const SEL_OPTS = `
+    <option value="">— Seleccionar hospital —</option>
+    <option>HOSPITAL PENNA</option>
+    <option>HOSPITAL ARGERICH</option>
+    <option>HOSPITAL RAMOS MEJIA</option>
+    <option>HOSPITAL FERNANDEZ</option>
+    <option>HOSPITAL RIVADAVIA</option>
+    <option>HOSPITAL PIROVANO</option>
+    <option>HOSPITAL TORNU</option>
+    <option>HOSPITAL SANTOJANNI</option>
+    <option>HOSPITAL PIÑERO</option>
+    <option>HOSPITAL GRIERSON</option>
+    <option>HOSPITAL ZUBIZARRETA</option>
+    <option>HOSPITAL VELEZ SARSFIELD</option>
+    <option>HOSPITAL ALVAREZ</option>
+    <option>HOSPITAL DURAND</option>
+    <option>HOSPITAL MUÑIZ</option>
+    <option>HOSPITAL SANTA LUCIA</option>
+    <option>HOSPITAL GUTIERREZ</option>
+    <option>HOSPITAL ELIZALDE</option>
+    <option>OTROS</option>
+  `;
+
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const num = v => Math.max(0, parseInt(v,10) || 0);
+  const get = k => num(localStorage.getItem(k));
+  const set = (k,v) => localStorage.setItem(k, String(num(v)));
+
+  const keySel = i => `hosp${i}_sel`;
+  const keyCnt = i => `hosp${i}_cnt`;
+
+  function totalTrasladados(){ return num(localStorage.getItem('proc_trasladados')); }
+  function listRows(){ return $$('#hospList [data-hosp]'); }
+  function sumHosp(){ return listRows().reduce((acc,row)=> acc + get(keyCnt(parseInt(row.dataset.hosp,10))), 0); }
+  function hospRestantes(){ return Math.max(totalTrasladados() - sumHosp(), 0); }
+
+  function writeUI(){
+    listRows().forEach(row=>{
+      const i = parseInt(row.dataset.hosp,10);
+      const el = row.querySelector('.value');
+      if (el) el.textContent = get(keyCnt(i));
+      const sel = row.querySelector('select');
+      if (sel){
+        const saved = localStorage.getItem(keySel(i)) || '';
+        if (saved && sel.value !== saved) sel.value = saved;
+      }
+    });
+    const rest = $('#hospRestantes');
+    if (rest) rest.textContent = hospRestantes();
+  }
+
+  function bindSelect(row){
+    const i = parseInt(row.dataset.hosp,10);
+    const sel = row.querySelector('select');
+    if (!sel) return;
+    const saved = localStorage.getItem(keySel(i)) || '';
+    if (saved) sel.value = saved;
+    sel.addEventListener('change', ()=> localStorage.setItem(keySel(i), sel.value || ''));
+  }
+
+  function ensureStorage(row){
+    const i = parseInt(row.dataset.hosp,10);
+    if (localStorage.getItem(keyCnt(i)) === null) set(keyCnt(i), 0);
+    if (localStorage.getItem(keySel(i)) === null) localStorage.setItem(keySel(i), '');
+  }
+
+  document.addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-hinc]');
+    if (!btn) return;
+    const row = btn.closest('[data-hosp]');
+    if (!row) return;
+    const i = parseInt(row.dataset.hosp,10);
+    const inc = btn.dataset.hinc === '+' ? 1 : -1;
+    const selVal = (row.querySelector('select')?.value || '').trim();
+    if (inc > 0 && !selVal){ alert('Seleccione un hospital primero.'); return; }
+    let cur = get(keyCnt(i));
+    if (inc > 0){
+      if (hospRestantes() <= 0){ alert('No puede superar el total de trasladados.'); return; }
+      cur++;
+    } else {
+      if (cur <= 0) return;
+      cur--;
+    }
+    set(keyCnt(i), cur);
+    writeUI();
+  });
+
+  $('#addHosp')?.addEventListener('click', ()=>{
+    const rows = listRows();
+    if (rows.length >= MAX_DESTINOS){ alert(`Máximo de ${MAX_DESTINOS} destinos alcanzado.`); return; }
+    const next = rows.length ? Math.max(...rows.map(r=>parseInt(r.dataset.hosp,10))) + 1 : 1;
+    const div = document.createElement('div');
+    div.className = 'counter';
+    div.dataset.hosp = String(next);
+    div.innerHTML = `
+      <span class="label" style="flex:1;">
+        <select id="hosp${next}_sel" style="width:100%;height:40px;border-radius:10px;border:1px solid #1f2937;background:#0b1221;color:#e5e7eb;padding:8px;">
+          ${SEL_OPTS}
+        </select>
+      </span>
+      <div class="controls">
+        <button class="btn" data-hinc="-">−</button>
+        <span class="value" id="hosp${next}_cnt">0</span>
+        <button class="btn primary" data-hinc="+">+</button>
+      </div>
+    `;
+    $('#hospList').appendChild(div);
+    ensureStorage(div);
+    bindSelect(div);
+    writeUI();
+  });
+
+  const __origSetItem = localStorage.setItem;
+  localStorage.setItem = function(k, v){
+    __origSetItem.apply(this, arguments);
+    if (k === 'proc_trasladados'){
+      const total = totalTrasladados();
+      const rows = listRows();
+      let counts = rows.map(r=>get(keyCnt(parseInt(r.dataset.hosp,10))));
+      let sum = counts.reduce((a,b)=>a+b,0);
+      if (sum > total){
+        let over = sum - total;
+        for (let idx = counts.length - 1; idx >= 0 && over > 0; idx--){
+          const i = parseInt(rows[idx].dataset.hosp,10);
+          const take = Math.min(counts[idx], over);
+          counts[idx] -= take;
+          set(keyCnt(i), counts[idx]);
+          over -= take;
+        }
+      }
+      writeUI();
+    }
+  };
+
+  window.__getHospBreakdown = function(){
+    return listRows().map(r=>{
+      const i = parseInt(r.dataset.hosp,10);
+      const name = (r.querySelector('select')?.value || '').trim();
+      const n = get(keyCnt(i));
+      return (name && n>0) ? {name, n} : null;
+    }).filter(Boolean);
+  };
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    listRows().forEach(row=>{ ensureStorage(row); bindSelect(row); });
+    writeUI();
+  });
+})();
+</script>
+
+
+<script>
+(function(){
+  const FIELDS = ['methane_m','methane_e1','methane_t','methane_h','methane_a','methane_n','methane_e2'];
+  function loadField(id){
+    const el = document.getElementById(id);
+    if (!el) return;
+    const saved = localStorage.getItem(id) || '';
+    if (saved) el.value = saved;
+    el.addEventListener('input', () => localStorage.setItem(id, el.value || ''));
+  }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    FIELDS.forEach(loadField);
+  });
+})();
+</script>
+
+<script>
+function buildResumen() {
+  const d = k => parseInt(localStorage.getItem(k) || '0', 10) || 0;
+  const total = d('proc_atendidos') + d('proc_trasladados');
+  const incidente = (localStorage.getItem('titulo_text') || '').trim();
+  const direccion = (localStorage.getItem('direccion_text') || '').trim();
+  const notas = (localStorage.getItem('notas_text') || '').trim();
+
+  const lines = [
+    `Incidente: ${incidente}`,
+    `Dirección: ${direccion}`,
+    ``,
+    `Hasta ahora ${total} pacientes`,
+    ``,
+    `Sexo:`,
+    `* ${d('sexo_f')} Femeninos.`,
+    `* ${d('sexo_m')} Masculinos.`,
+    `* ${d('sexo_sd')} S/D`,
+    ``,
+    `Edad:`,
+    `* ${d('edad_menores')} Menores`,
+    `* ${d('edad_mayores')} Mayores`,
+    `* ${d('edad_sd')} S/D`,
+    ``,
+    `Procedimiento`,
+    `* ${d('proc_atendidos')} Atendidos en el lugar:`,
+    `* ${d('proc_trasladados')} trasladados`
+  ];
+
+  const br = (window.__getHospBreakdown ? window.__getHospBreakdown() : []);
+  if (br && br.length){
+    br.forEach(({name,n}) => lines.push(`  - ${n} → ${name}`));
+  }
+
+  const m  = (localStorage.getItem('methane_m')  || '').trim();
+  const e1 = (localStorage.getItem('methane_e1') || '').trim();
+  const t  = (localStorage.getItem('methane_t')  || '').trim();
+  const h  = (localStorage.getItem('methane_h')  || '').trim();
+  const a  = (localStorage.getItem('methane_a')  || '').trim();
+  const n  = (localStorage.getItem('methane_n')  || '').trim();
+  const e2 = (localStorage.getItem('methane_e2') || '').trim();
+
+  lines.push(
+    ``,
+    `METHANE:`,
+    `M: ${m || '-'}`,
+    `E: ${e1 || '-'}`,
+    `T: ${t || '-'}`,
+    `H: ${h || '-'}`,
+    `A: ${a || '-'}`,
+    `N: ${n || '-'}`,
+    `E: ${e2 || '-'}`,
+    ``,
+    `Dotación:`,
+    `* ${d('dot_moviles')} Móviles`,
+    `* ${d('dot_aereo')} Aéreo`,
+    ``,
+    `Notas:`,
+    notas
+  );
+
+  return lines.join('\n');
+}
+</script>
+</script>
+</body>
+</html>
